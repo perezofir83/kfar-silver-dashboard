@@ -8,6 +8,7 @@ export interface Lead {
     city: string; // Column C? based on "External from Ashkelon" rule
     grade: string; // Column D: 'ז', 'ח', 'ט', 'י'
     contactDate: string;
+    timestamp: string; // Column A
     source: string;
     leadType: 'External' | 'Boarding' | 'Naale' | 'Aliyah'; // Assumed Column E or derived
     notes: string;

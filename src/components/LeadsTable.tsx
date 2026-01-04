@@ -26,11 +26,36 @@ export function LeadsTable({ leads }: LeadsTableProps) {
         }
     };
 
+    // Sort leads by timestamp (newest first)
+    // We treat timestamp as string, assuming ISO or comparable format. 
+    // If format is DD/MM/YYYY HH:MM:SS, string comparison might be wrong, but usually it's ISO from API.
+    // Let's assume standard JS Date parseable.
+    const sortedLeads = [...leads].sort((a, b) => {
+        const dateA = new Date(a.timestamp || 0).getTime();
+        const dateB = new Date(b.timestamp || 0).getTime();
+        return dateB - dateA; // Descending
+    });
+
+    const formatDate = (ts: string) => {
+        if (!ts) return '';
+        try {
+            return new Date(ts).toLocaleDateString('he-IL', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return ts;
+        }
+    };
+
     return (
         <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
             <table className="min-w-full divide-y divide-gray-200 text-sm text-right">
                 <thead className="bg-gray-50 font-medium text-gray-500">
                     <tr>
+                        <th className="px-4 py-3">תאריך</th>
                         <th className="px-4 py-3">שם מלא</th>
                         <th className="px-4 py-3">מסלול</th>
                         <th className="px-4 py-3">שכבה</th>
@@ -40,8 +65,9 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                    {leads.map((lead) => (
+                    {sortedLeads.map((lead) => (
                         <tr key={lead.id} className={cn("transition-colors", getRowColor(lead.status))}>
+                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{formatDate(lead.timestamp)}</td>
                             <td className="px-4 py-3 font-medium text-gray-900">{lead.name}</td>
                             <td className="px-4 py-3 text-gray-600">
                                 {lead.leadType === 'External' ? 'אקסטרני' :
